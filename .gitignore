@@ -1,0 +1,17 @@
+# Backend virtual environment
+/backend/venv/
+
+# Smart contract cache and node_modules
+/smart_contract/cache/
+/smart_contract/node_modules/
+
+# Optional: OS/system files
+.DS_Store
+Thumbs.db
+
+# Ignore any .pyc or __pycache__ in Python projects
+**/__pycache__/
+**/*.pyc
+
+# Ignore git folders of subprojects if you don't want them tracked
+**/.git/

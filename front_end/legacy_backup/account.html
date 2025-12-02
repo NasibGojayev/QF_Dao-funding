@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account - DonCoin</title>
+    <meta name="description" content="Manage your DonCoin account, view contributions, and connect your wallet.">
+
+    <!-- Resource Hints for Performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+
+    <!-- Optimized Font Loading -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="/style.css">
+</head>
+
+<body>
+    <!-- Header/Navigation -->
+    <header class="header" id="header">
+        <nav class="nav container">
+            <a href="/" class="logo">DonCoin</a>
+            <ul class="nav-links">
+                <li><a href="/#about">About</a></li>
+                <li><a href="/#projects">Projects</a></li>
+                <li><a href="/#how-it-works">How It Works</a></li>
+                <li><a href="/#faq">FAQ</a></li>
+                <li><a href="/account.html" class="active">Account</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Account Management Page -->
+    <section class="section" style="padding-top: 120px; min-height: 100vh;">
+        <div class="container">
+            <h1 class="section-title">Account Management</h1>
+            <p class="section-subtitle">
+                Manage your wallet, view contributions, and track your impact
+            </p>
+
+            <div class="account-container glass"
+                style="max-width: 900px; margin: 0 auto; padding: var(--spacing-xl); border-radius: var(--radius-xl);">
+
+                <!-- Wallet Not Connected State -->
+                <div id="wallet-disconnected" class="wallet-state">
+                    <div style="text-align: center; padding: var(--spacing-2xl) 0;">
+                        <div style="font-size: 4rem; margin-bottom: var(--spacing-md);">🔐</div>
+                        <h2 style="font-size: var(--font-size-2xl); margin-bottom: var(--spacing-md);">Connect Your
+                            Wallet</h2>
+                        <p
+                            style="color: var(--text-secondary); margin-bottom: var(--spacing-xl); max-width: 500px; margin-left: auto; margin-right: auto;">
+                            Connect your wallet to access your account, view your contributions, and manage your
+                            profile.
+                        </p>
+                        <button class="btn btn-primary" id="connect-wallet-main"
+                            style="padding: 1rem 2rem; font-size: var(--font-size-lg);">
+                            🔗 Connect Wallet
+                        </button>
+                        <p
+                            style="margin-top: var(--spacing-lg); color: var(--text-tertiary); font-size: var(--font-size-sm);">
+                            We support MetaMask, WalletConnect, and more
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Wallet Connected State -->
+                <div id="wallet-connected" class="wallet-state" style="display: none;">
+
+                    <!-- User Profile Card -->
+                    <div class="card" style="margin-bottom: var(--spacing-lg);">
+                        <div style="display: flex; align-items: center; gap: var(--spacing-lg); flex-wrap: wrap;">
+                            <div class="user-avatar"
+                                style="width: 80px; height: 80px; border-radius: 50%; background: var(--gradient-primary); display: flex; align-items: center; justify-content: center; font-size: 2rem;">
+                                👤
+                            </div>
+                            <div style="flex: 1; min-width: 200px;">
+                                <h3 id="user-address"
+                                    style="font-size: var(--font-size-xl); margin-bottom: 0.5rem; font-family: monospace;">
+                                    0x742d...4f7a
+                                </h3>
+                                <p style="color: var(--text-secondary); margin-bottom: 0.5rem;">
+                                    Member since <span id="member-since">November 2025</span>
+                                </p>
+                                <div style="display: flex; gap: var(--spacing-sm); flex-wrap: wrap;">
+                                    <span class="badge">✓ Verified</span>
+                                    <span class="badge">💎 Active Donor</span>
+                                </div>
+
+                                <!-- Trust Score Display -->
+                                <div
+                                    style="margin-top: var(--spacing-md); padding: var(--spacing-md); background: var(--glass-bg); border-radius: var(--radius-md); border: 1px solid var(--glass-border);">
+                                    <div
+                                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                                        <span
+                                            style="font-size: var(--font-size-sm); color: var(--text-secondary);">Trust
+                                            Score</span>
+                                        <button onclick="toggleScoreBreakdown()"
+                                            style="background: none; border: none; color: var(--primary-cyan); cursor: pointer; font-size: var(--font-size-sm); text-decoration: underline;">
+                                            View Breakdown
+                                        </button>
+                                    </div>
+                                    <div style="display: flex; align-items: center; gap: var(--spacing-md);">
+                                        <span id="trust-score"
+                                            style="font-size: var(--font-size-3xl); font-weight: 800;">--</span>
+                                        <span
+                                            style="font-size: var(--font-size-lg); color: var(--text-secondary);">/100</span>
+                                        <span id="trust-tier"
+                                            style="font-size: var(--font-size-lg); font-weight: 600; margin-left: auto;">🌱
+                                            New</span>
+                                    </div>
+                                    <div
+                                        style="width: 100%; height: 8px; background: var(--bg-tertiary); border-radius: var(--radius-full); overflow: hidden; margin-top: 0.5rem;">
+                                        <div id="trust-progress"
+                                            style="height: 100%; width: 0%; background: var(--gradient-primary); transition: width 1s ease-out;">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="btn btn-secondary" id="disconnect-wallet-btn" style="white-space: nowrap;">
+                                Disconnect
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Account Stats -->
+                    <div class="grid grid-3" style="margin-bottom: var(--spacing-lg);">
+                        <div class="stat-card glass">
+                            <span class="stat-number" style="font-size: var(--font-size-3xl);"
+                                id="total-donated">$0</span>
+                            <span class="stat-label">Total Donated</span>
+                        </div>
+                        <div class="stat-card glass">
+                            <span class="stat-number" style="font-size: var(--font-size-3xl);"
+                                id="projects-supported">0</span>
+                            <span class="stat-label">Projects Supported</span>
+                        </div>
+                        <div class="stat-card glass">
+                            <span class="stat-number" style="font-size: var(--font-size-3xl);"
+                                id="matching-earned">$0</span>
+                            <span class="stat-label">Matching Earned</span>
+                        </div>
+                    </div>
+
+                    <!-- Transaction History -->
+                    <div class="card">
+                        <h3
+                            style="font-size: var(--font-size-xl); margin-bottom: var(--spacing-md); display: flex; align-items: center; gap: 0.5rem;">
+                            <span>📋</span> Recent Transactions
+                        </h3>
+                        <div id="transaction-list">
+                            <div class="transaction-item"
+                                style="padding: var(--spacing-md); border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <p style="font-weight: 600; margin-bottom: 0.25rem;">Contributed to Open Source
+                                        Libraries</p>
+                                    <p style="font-size: var(--font-size-sm); color: var(--text-secondary);">Nov 29,
+                                        2025 • 10:45 AM</p>
+                                </div>
+                                <div style="text-align: right;">
+                                    <p style="font-weight: 600; color: var(--primary-purple);">$50.00</p>
+                                    <p style="font-size: var(--font-size-sm); color: var(--primary-cyan);">+$25 matching
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="transaction-item"
+                                style="padding: var(--spacing-md); border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <p style="font-weight: 600; margin-bottom: 0.25rem;">Contributed to Climate Action
+                                        DAO</p>
+                                    <p style="font-size: var(--font-size-sm); color: var(--text-secondary);">Nov 28,
+                                        2025 • 3:20 PM</p>
+                                </div>
+                                <div style="text-align: right;">
+                                    <p style="font-weight: 600; color: var(--primary-purple);">$100.00</p>
+                                    <p style="font-size: var(--font-size-sm); color: var(--primary-cyan);">+$80 matching
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="transaction-item"
+                                style="padding: var(--spacing-md); display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <p style="font-weight: 600; margin-bottom: 0.25rem;">Contributed to Educational
+                                        Content</p>
+                                    <p style="font-size: var(--font-size-sm); color: var(--text-secondary);">Nov 27,
+                                        2025 • 9:15 AM</p>
+                                </div>
+                                <div style="text-align: right;">
+                                    <p style="font-weight: 600; color: var(--primary-purple);">$25.00</p>
+                                    <p style="font-size: var(--font-size-sm); color: var(--primary-cyan);">+$15 matching
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="text-align: center; margin-top: var(--spacing-lg);">
+                            <a href="/" class="btn btn-secondary">← Back to Home</a>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Trust Score Breakdown Modal -->
+    <div id="score-breakdown-modal" class="score-modal" style="display: none;"
+        onclick="if(event.target === this) toggleScoreBreakdown()">
+        <div class="score-modal-content glass"
+            style="max-width: 500px; margin: auto; padding: var(--spacing-xl); border-radius: var(--radius-xl);">
+            <div
+                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-lg);">
+                <h2 style="font-size: var(--font-size-2xl); margin: 0;">Trust Score Breakdown</h2>
+                <button onclick="toggleScoreBreakdown()"
+                    style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-secondary);">×</button>
+            </div>
+
+            <div style="margin-bottom: var(--spacing-lg);">
+                <div class="score-metric-item">
+                    <span>🕐 Account Age</span>
+                    <span id="breakdown-account-age" class="score-value">0/15</span>
+                </div>
+                <div class="score-metric-item">
+                    <span>📊 Contribution Frequency</span>
+                    <span id="breakdown-frequency" class="score-value">0/20</span>
+                </div>
+                <div class="score-metric-item">
+                    <span>💰 Totalsel Donated</span>
+                    <span id="breakdown-donated" class="score-value">0/15</span>
+                </div>
+                <div class="score-metric-item">
+                    <span>🌈 Project Diversity</span>
+                    <span id="breakdown-diversity" class="score-value">0/15</span>
+                </div>
+                <div class="score-metric-item">
+                    <span>📈 Contribution Consistency</span>
+                    <span id="breakdown-consistency" class="score-value">0/15</span>
+                </div>
+                <div class="score-metric-item">
+                    <span>💵 Average Contribution</span>
+                    <span id="breakdown-avg" class="score-value">0/10</span>
+                </div>
+                <div class="score-metric-item">
+                    <span>✅ Verification Status</span>
+                    <span id="breakdown-verification" class="score-value">0/10</span>
+                </div>
+            </div>
+
+            <div
+                style="border-top: 2px solid var(--glass-border); padding-top: var(--spacing-md); display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: var(--font-size-lg); font-weight: 700;">Total Score</span>
+                <span id="breakdown-total"
+                    style="font-size: var(--font-size-2xl); font-weight: 800; background: var(--gradient-primary); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent;">0/100</span>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>DonCoin</h3>
+                    <p style="color: var(--text-secondary); line-height: 1.8;">
+                        Democratizing funding for public goods through quadratic funding mechanisms.
+                    </p>
+                </div>
+
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/#projects">Projects</a></li>
+                        <li><a href="/account.html">Account</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h3>Community</h3>
+                    <ul>
+                        <li><a href="#">Discord</a></li>
+                        <li><a href="#">Twitter</a></li>
+                        <li><a href="#">GitHub</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h3>Legal</h3>
+                    <ul>
+                        <li><a href="#">Terms of Service</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2025 DonCoin. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script type="module" src="/account.js" defer></script>
+</body>
+
+</html>

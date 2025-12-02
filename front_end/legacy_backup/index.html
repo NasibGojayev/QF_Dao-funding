@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DonCoin - Democratizing Public Goods Funding</title>
+  <meta name="description"
+    content="Join the future of democratic funding with DonCoin. Support public goods projects with transparent, community-driven quadratic funding mechanisms.">
+
+  <!-- Resource Hints for Performance -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+
+  <!-- Optimized Font Loading -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+    rel="stylesheet">
+
+  <link rel="stylesheet" href="/style.css">
+</head>
+
+<body>
+  <!-- Header/Navigation -->
+  <header class="header" id="header">
+    <nav class="nav container">
+      <a href="#" class="logo">DonCoin</a>
+      <ul class="nav-links">
+        <li><a href="#about">About</a></li>
+        <li><a href="#projects">Projects</a></li>
+        <li><a href="#how-it-works">How It Works</a></li>
+        <li><a href="#faq">FAQ</a></li>
+        <li><a href="/account.html" class="btn btn-primary" style="padding: 0.75rem 1.5rem;">Connect Wallet</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Hero Section with 3D Model -->
+  <section class="hero">
+    <div class="hero-background"></div>
+
+    <!-- 3D Canvas Container -->
+    <div id="canvas-container"></div>
+
+    <div class="hero-content container">
+      <h1 class="hero-title fade-in-up">
+        Democratizing<br>Public Goods Funding
+      </h1>
+      <p class="hero-subtitle fade-in-up" style="animation-delay: 0.2s;">
+        Harness the power of quadratic funding to support projects that matter.<br>
+        More contributors, more matching funds.
+      </p>
+      <div class="hero-cta fade-in-up" style="animation-delay: 0.4s;">
+        <a href="#projects" class="btn btn-primary">Explore Projects</a>
+        <a href="#how-it-works" class="btn btn-secondary">Learn More</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats Section -->
+  <section class="section">
+    <div class="container">
+      <div class="stats-grid">
+        <div class="stat-card glass">
+          <span class="stat-number" data-target="2500000">0</span>
+          <span class="stat-label">Total Funded</span>
+        </div>
+        <div class="stat-card glass">
+          <span class="stat-number" data-target="487">0</span>
+          <span class="stat-label">Projects</span>
+        </div>
+        <div class="stat-card glass">
+          <span class="stat-number" data-target="12500">0</span>
+          <span class="stat-label">Contributors</span>
+        </div>
+        <div class="stat-card glass">
+          <span class="stat-number" data-target="850000">0</span>
+          <span class="stat-label">Matching Pool</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- About Quadratic Funding -->
+  <section id="about" class="section">
+    <div class="container">
+      <h2 class="section-title">What is Quadratic Funding?</h2>
+      <p class="section-subtitle">
+        A revolutionary funding mechanism that amplifies the voice of the community while ensuring fair distribution of
+        resources.
+      </p>
+
+      <div class="grid grid-3">
+        <div class="card">
+          <h3 style="font-size: 1.5rem; margin-bottom: 1rem; color: var(--primary-purple);">
+            🎯 Democratic
+          </h3>
+          <p style="color: var(--text-secondary); line-height: 1.8;">
+            Number of contributors matters more than amount. Small donations are amplified through matching, giving
+            everyone a voice.
+          </p>
+        </div>
+
+        <div class="card">
+          <h3 style="font-size: 1.5rem; margin-bottom: 1rem; color: var(--primary-blue);">
+            🔍 Transparent
+          </h3>
+          <p style="color: var(--text-secondary); line-height: 1.8;">
+            All contributions and matching calculations are recorded on-chain, ensuring complete transparency and
+            accountability.
+          </p>
+        </div>
+
+        <div class="card">
+          <h3 style="font-size: 1.5rem; margin-bottom: 1rem; color: var(--primary-cyan);">
+            ⚡ Efficient
+          </h3>
+          <p style="color: var(--text-secondary); line-height: 1.8;">
+            Mathematical formula ensures optimal allocation of matching funds based on community preference and support.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Active Projects -->
+  <section class="section" id="projects">
+    <div class="container">
+      <h2 class="section-title">Active Projects</h2>
+      <p class="section-subtitle">
+        Support innovative public goods projects through quadratic funding
+      </p>
+
+      <div class="grid grid-3" id="projects-grid">
+        <!-- Projects will be rendered here by JavaScript -->
+      </div>
+
+      <!-- View More Button -->
+      <div id="view-more-container"
+        style="display: flex; justify-content: center; margin-top: var(--spacing-2xl); animation: fadeInUp 0.6s ease-out;">
+        <button onclick="loadMoreProjects()" class="btn btn-secondary"
+          style="padding: 1rem 3rem; font-size: var(--font-size-lg); font-weight: 600; box-shadow: 0 4px 20px rgba(139, 92, 246, 0.2);">
+          📊 View More Projects
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works -->
+  <section id="how-it-works" class="section">
+    <div class="container">
+      <h2 class="section-title">How It Works</h2>
+      <p class="section-subtitle">
+        Understanding the quadratic funding formula
+      </p>
+
+      <div class="glass" style="padding: 3rem; border-radius: 1.5rem; max-width: 800px; margin: 0 auto;">
+        <div style="text-align: center; margin-bottom: 2rem;">
+          <div
+            style="font-size: 2rem; font-family: 'Courier New', monospace; color: var(--primary-purple); margin-bottom: 1rem;">
+            Matching = (√c₁ + √c₂ + √c₃ + ...)²
+          </div>
+          <p style="color: var(--text-secondary); line-height: 1.8;">
+            Where c₁, c₂, c₃... are individual contributions to a project
+          </p>
+        </div>
+
+        <div class="grid grid-2" style="gap: 2rem; margin-top: 2rem;">
+          <div>
+            <h4 style="color: var(--primary-purple); margin-bottom: 1rem; font-size: 1.25rem;">Step 1: Contribute</h4>
+            <p style="color: var(--text-secondary); line-height: 1.8;">
+              Choose a project and make your contribution. Every contribution counts, regardless of size.
+            </p>
+          </div>
+
+          <div>
+            <h4 style="color: var(--primary-blue); margin-bottom: 1rem; font-size: 1.25rem;">Step 2: Calculate</h4>
+            <p style="color: var(--text-secondary); line-height: 1.8;">
+              The quadratic formula calculates matching based on number of contributors.
+            </p>
+          </div>
+
+          <div>
+            <h4 style="color: var(--primary-cyan); margin-bottom: 1rem; font-size: 1.25rem;">Step 3: Match</h4>
+            <p style="color: var(--text-secondary); line-height: 1.8;">
+              Matching funds from the pool are distributed proportionally to community support.
+            </p>
+          </div>
+
+          <div>
+            <h4 style="color: var(--accent-pink); margin-bottom: 1rem; font-size: 1.25rem;">Step 4: Impact</h4>
+            <p style="color: var(--text-secondary); line-height: 1.8;">
+              Projects receive their total funding to create real-world impact.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ Section -->
+  <section id="faq" class="section">
+    <div class="container">
+      <h2 class="section-title">Frequently Asked Questions</h2>
+
+      <div style="max-width: 800px; margin: 0 auto;">
+        <div class="card" style="margin-bottom: 1rem;">
+          <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem;">What makes quadratic funding different?</h3>
+          <p style="color: var(--text-secondary); line-height: 1.8;">
+            Unlike traditional funding, quadratic funding prioritizes the number of supporters over the amount. This
+            means a project with 100 small donations will receive more matching than one with a single large donation.
+          </p>
+        </div>
+
+        <div class="card" style="margin-bottom: 1rem;">
+          <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem;">How is the matching pool distributed?</h3>
+          <p style="color: var(--text-secondary); line-height: 1.8;">
+            The matching pool is distributed using the quadratic formula, which ensures projects with broader community
+            support receive proportionally more funding from the pool.
+          </p>
+        </div>
+
+        <div class="card" style="margin-bottom: 1rem;">
+          <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem;">Is my contribution secure?</h3>
+          <p style="color: var(--text-secondary); line-height: 1.8;">
+            Yes! All contributions are secured through smart contracts on the blockchain, ensuring transparency and
+            immutability of all transactions.
+          </p>
+        </div>
+
+        <div class="card">
+          <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem;">Can I submit my own project?</h3>
+          <p style="color: var(--text-secondary); line-height: 1.8;">
+            Absolutely! We welcome public goods projects of all kinds. Click "Submit Project" to get started with your
+            application.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>QF DAO</h3>
+          <p style="color: var(--text-secondary); line-height: 1.8;">
+            Democratizing funding for public goods through quadratic funding mechanisms.
+          </p>
+        </div>
+
+        <div class="footer-section">
+          <h3>Resources</h3>
+          <ul>
+            <li><a href="#">Documentation</a></li>
+            <li><a href="#">Whitepaper</a></li>
+            <li><a href="#">Research</a></li>
+            <li><a href="#">Blog</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-section">
+          <h3>Community</h3>
+          <ul>
+            <li><a href="#">Discord</a></li>
+            <li><a href="#">Twitter</a></li>
+            <li><a href="#">GitHub</a></li>
+            <li><a href="#">Forum</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-section">
+          <h3>Legal</h3>
+          <ul>
+            <li><a href="#">Terms of Service</a></li>
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Cookie Policy</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>&copy; 2025 DonCoin. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script type="module" src="/main.js" defer></script>
+</body>
+
+</html>
