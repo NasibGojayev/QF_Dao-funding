@@ -1,0 +1,1 @@
+{"request_id": "7f1b6c20-674e-4918-ac39-21ab1eec24e8", "timestamp": "2025-12-08T20:03:53.137454", "model_name": "risk_scorer", "model_version": "1.0", "input_features": {"wallet_address": "string", "sybil_score": 0.5}, "output": 0.35506562173075473, "latency_ms": 54.461002349853516, "metadata": null}

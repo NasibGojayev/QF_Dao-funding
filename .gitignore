@@ -1,17 +1,101 @@
-# Backend virtual environment
-/backend/venv/
+# ===========================================
+# Python / Virtual Environments
+# ===========================================
+**/venv/
+**/.venv/
+**/env/
+**/.env.local
+**/*.pyc
+**/__pycache__/
+*.egg-info/
+.eggs/
+*.egg
+.Python
+pip-log.txt
+pip-delete-this-directory.txt
 
-# Smart contract cache and node_modules
-/smart_contract/cache/
-/smart_contract/node_modules/
+# ===========================================
+# Node.js / npm / yarn
+# ===========================================
+**/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+.npm
 
-# Optional: OS/system files
+# ===========================================
+# Next.js
+# ===========================================
+**/.next/
+**/out/
+
+# ===========================================
+# Hardhat / Solidity / Smart Contracts
+# ===========================================
+**/cache/
+**/artifacts/
+**/typechain-types/
+**/coverage/
+**/coverage.json
+
+# ===========================================
+# Build outputs
+# ===========================================
+**/build/
+**/dist/
+
+# ===========================================
+# Log files
+# ===========================================
+*.log
+**/logs/*.log
+
+# ===========================================
+# OS/System files
+# ===========================================
 .DS_Store
 Thumbs.db
+*.swp
+*.swo
+*~
 
-# Ignore any .pyc or __pycache__ in Python projects
-**/__pycache__/
-**/*.pyc
+# ===========================================
+# IDE / Editor specific
+# ===========================================
+.idea/
+.vscode/
+*.sublime-workspace
+*.sublime-project
 
-# Ignore git folders of subprojects if you don't want them tracked
+# ===========================================
+# Environment / Secrets
+# ===========================================
+.env
+.env.local
+.env.*.local
+*.env
+
+# ===========================================
+# Misc caches
+# ===========================================
+.cache/
+*.cache
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# ===========================================
+# Jupyter Notebooks
+# ===========================================
+.ipynb_checkpoints/
+
+# ===========================================
+# Docker
+# ===========================================
+*.tar
+
+# ===========================================
+# Ignore git folders of subprojects
+# ===========================================
 **/.git/

@@ -11,10 +11,16 @@
 """
 
 from pathlib import Path
+import os
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Load environment variables from the root .env file
+# We look for .env in the workspace root (2 levels up from doncoin folder)
+ENV_PATH = BASE_DIR.parent.parent / '.env'
+load_dotenv(dotenv_path=ENV_PATH, override=True)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
@@ -25,7 +31,14 @@ SECRET_KEY = 'django-insecure-vvqt3tgf&f-guy4wa*6*08v8&8v6(57a-5+ptlxht#hj(-lgbj
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1' , '192.168.1.67']
+HOST_IP = os.getenv('HOST_IP')
+if HOST_IP:
+    ALLOWED_HOSTS.append(HOST_IP)
+
+DJANGO_ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS')
+if DJANGO_ALLOWED_HOSTS:
+    ALLOWED_HOSTS.extend(DJANGO_ALLOWED_HOSTS.split())
 
 
 # Application definition
@@ -40,9 +53,27 @@ INSTALLED_APPS = [
     'base',
     'rest_framework',
     'django_filters',
+    'corsheaders'
 ]
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://192.168.1.67:3000",
+    "http://*:3000",
+    "http://localhost:6240",
+    "http://127.0.0.1:6240",
+]
+NEXT_PUBLIC_API_URL = os.getenv('NEXT_PUBLIC_API_URL')
+if NEXT_PUBLIC_API_URL:
+    # Extract origin if full URL provided or use direct value
+    CORS_ALLOWED_ORIGINS.append(os.getenv('NEXT_PUBLIC_API_URL').replace(':8000', ':3000'))
+    
+# Also add directly constructed origin
+if HOST_IP:
+    CORS_ALLOWED_ORIGINS.append(f"http://{HOST_IP}:3000")
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -50,6 +81,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'middleware.log_middleware.LogEverythingMiddleware'
 ]
 REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': [
@@ -77,8 +109,117 @@ TEMPLATES = [
         },
     },
 ]
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+
+    'formatters': {
+        'standard': {
+            'format': '[{asctime}] {levelname} {name} {message}',
+            'style': '{',
+        },
+        'detailed': {
+            'format': '[{asctime}] {levelname} {name}:{lineno} | {message}',
+            'style': '{',
+        },
+        'json': {
+            'format': '{{"timestamp": "{asctime}", "level": "{levelname}", "logger": "{name}", "message": "{message}"}}',
+            'style': '{',
+        },
+    },
+
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'standard',
+            'level': 'INFO',
+        },
+        'all_file': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': BASE_DIR.parent.parent / 'logs/backend/all.log',
+            'maxBytes': 5 * 1024 * 1024,  # 5MB
+            'backupCount': 5,
+            'formatter': 'detailed',
+        },
+        'api_file': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': BASE_DIR.parent.parent / 'logs/backend/api_requests.log',
+            'maxBytes': 5 * 1024 * 1024,
+            'backupCount': 5,
+            'formatter': 'detailed',
+        },
+        'db_file': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': BASE_DIR.parent.parent / 'logs/backend/db_queries.log',
+            'maxBytes': 5 * 1024 * 1024,
+            'backupCount': 5,
+            'formatter': 'detailed',
+        },
+        'blockchain_file': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': BASE_DIR.parent.parent / 'logs/backend/blockchain.log',
+            'maxBytes': 5 * 1024 * 1024,
+            'backupCount': 5,
+            'formatter': 'json',
+        },
+        'security_file': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': BASE_DIR.parent.parent / 'logs/backend/security.log',
+            'maxBytes': 5 * 1024 * 1024,
+            'backupCount': 5,
+            'formatter': 'detailed',
+        },
+    },
+
+    'loggers': {
+        # Root logger - catch everything
+        '': {
+            'handlers': ['all_file', 'console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        # API request logging
+        'django.request': {
+            'handlers': ['api_file', 'all_file'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'api': {
+            'handlers': ['api_file', 'all_file', 'console'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        # Database query logging
+        'django.db.backends': {
+            'handlers': ['db_file'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        # Blockchain operations
+        'blockchain': {
+            'handlers': ['blockchain_file', 'all_file', 'console'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        # Indexer logging
+        'indexer': {
+            'handlers': ['all_file', 'console'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        # Security logging
+        'django.security': {
+            'handlers': ['security_file', 'all_file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    },
+}
+
 
 WSGI_APPLICATION = 'config.wsgi.application'
+
+AUTH_USER_MODEL = 'base.Donor'
 
 
 # Database
@@ -87,13 +228,17 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": "postgres",
-        "USER": "nasibgojayev",
-        "PASSWORD": "",
-        "HOST": "localhost",
-        "PORT": 5432,
-    }
+        "NAME": os.getenv('DB_NAME', 'doncoin'),
+        "USER": os.getenv('DB_USER', 'nasibgojayev'),
+        "PASSWORD": os.getenv('DB_PASSWORD', ''),
+        "HOST": os.getenv('DB_HOST', 'localhost'),
+        "PORT": os.getenv('DB_PORT', '5432'),
+    },
+
+
 }
+
+
 
 
 # Password validation

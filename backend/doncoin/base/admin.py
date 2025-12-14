@@ -48,14 +48,13 @@ class WalletAdmin(admin.ModelAdmin):
     list_display = ("address", "status", "balance", "last_activity")
     search_fields = ("address",)
     list_filter = ("status",)
-    inlines = [DonorInline, SybilScoreInline]
-
+    # inlines = [DonorInline, SybilScoreInline] # Donor is OneToOne, inline might cause issues if not careful, but try tabular
 
 @admin.register(Donor)
 class DonorAdmin(admin.ModelAdmin):
-    list_display = ("username", "wallet", "reputation_score", "joined_at")
+    list_display = ("username", "wallet", "reputation_score", "joined_at", "is_staff")
     search_fields = ("username", "wallet__address")
-    list_filter = ("joined_at",)
+    list_filter = ("joined_at", "is_staff")
 
 
 @admin.register(SybilScore)
@@ -89,8 +88,8 @@ class ProposalAdmin(admin.ModelAdmin):
 
 @admin.register(Donation)
 class DonationAdmin(admin.ModelAdmin):
-    list_display = ("donor", "proposal", "amount", "sybil_score", "tx_hash", "created_at")
-    search_fields = ("tx_hash", "donor__username", "proposal__title")
+    list_display = ("donor", "proposal", "amount", "description", "created_at")
+    search_fields = ("description", "donor__username", "proposal__title")
     list_filter = ("created_at",)
 
 

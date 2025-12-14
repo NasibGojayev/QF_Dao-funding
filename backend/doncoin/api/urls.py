@@ -18,7 +18,13 @@ router.register(r'contract-events', views.ContractEventViewSet)
 router.register(r'governance-tokens', views.GovernanceTokenViewSet)
 
 app_name = 'api'
+from .auth_views import WalletLoginView
+from .views_faucet import ClaimTokensView
 
 urlpatterns = [
     path('', include(router.urls)),
+    # path('users/', ...), # REMOVED
+    path('auth/wallet/', WalletLoginView.as_view(), name='wallet-login'),
+    path('wallets/<uuid:wallet_id>/update/', views.WalletUpdateView.as_view(), name='wallet-update'),
+    path('faucet/', ClaimTokensView.as_view(), name='faucet'),
 ]

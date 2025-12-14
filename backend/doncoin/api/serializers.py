@@ -5,7 +5,6 @@ from base.models import (
     Donation, Match, QFResult, Payout, ContractEvent, GovernanceToken
 )
 
-
 class WalletSerializer(serializers.ModelSerializer):
     class Meta:
         model = Wallet
@@ -19,20 +18,33 @@ class DonorSerializer(serializers.ModelSerializer):
     wallet_details = WalletSerializer(source='wallet', read_only=True)
     total_donations = serializers.SerializerMethodField()
     total_proposals = serializers.SerializerMethodField()
+    
+    # Expose wallet address directly for convenience
+    address = serializers.SerializerMethodField()
 
     class Meta:
         model = Donor
         fields = [
-            'donor_id', 'wallet', 'wallet_details', 'username', 
-            'reputation_score', 'joined_at', 'total_donations', 'total_proposals'
+            'donor_id', 'wallet', 'wallet_details', 'address', 'username', 
+            'reputation_score', 'joined_at', 'total_donations', 'total_proposals',
+            'is_staff'
         ]
-        read_only_fields = ['donor_id', 'joined_at']
+        read_only_fields = ['donor_id', 'joined_at', 'is_staff']
+
+    def get_address(self, obj):
+        return obj.address
 
     def get_total_donations(self, obj):
-        return obj.donations.aggregate(total=Sum('amount'))['total'] or 0
+        try:
+            return obj.donations.aggregate(total=Sum('amount'))['total'] or 0
+        except:
+            return 0
 
     def get_total_proposals(self, obj):
-        return obj.proposals.count()
+        try:
+            return obj.proposals.count()
+        except:
+            return 0
 
 
 class SybilScoreSerializer(serializers.ModelSerializer):
@@ -71,29 +83,58 @@ class RoundSerializer(serializers.ModelSerializer):
     is_active = serializers.SerializerMethodField()
     total_proposals = serializers.SerializerMethodField()
     total_donations = serializers.SerializerMethodField()
+    
+    # Frontend compatibility fields
+    id = serializers.SerializerMethodField()
+    name = serializers.SerializerMethodField()
+    pool = serializers.SerializerMethodField()
+    endDate = serializers.SerializerMethodField()
 
     class Meta:
         model = Round
         fields = [
             'round_id', 'start_date', 'end_date', 'matching_pool',
             'matching_pool_details', 'status', 'is_active',
-            'total_proposals', 'total_donations'
+            'total_proposals', 'total_donations',
+            # Frontend compatibility fields
+            'id', 'name', 'pool', 'endDate'
         ]
         read_only_fields = ['round_id']
 
     def get_is_active(self, obj):
         from django.utils import timezone
         now = timezone.now()
-        return obj.start_date <= now <= obj.end_date and obj.status == 'active'
+        if obj.start_date and obj.end_date:
+            return obj.start_date <= now <= obj.end_date and obj.status == 'active'
+        return False
 
     def get_total_proposals(self, obj):
         return obj.proposals.count()
 
     def get_total_donations(self, obj):
         total = 0
-        for proposal in obj.proposals.all():
-            total += proposal.donations.aggregate(total=Sum('amount'))['total'] or 0
+        try:
+            for proposal in obj.proposals.all():
+                total += proposal.donations.aggregate(total=Sum('amount'))['total'] or 0
+        except:
+            pass
         return total
+    
+    # Frontend compatibility methods
+    def get_id(self, obj):
+        return f"round-{obj.round_id}"
+    
+    def get_name(self, obj):
+        return f"Round {str(obj.round_id)[:8]}" if obj.round_id else "Active Round"
+    
+    def get_pool(self, obj):
+        if obj.matching_pool:
+            return float(obj.matching_pool.total_funds)
+        return 0.0
+    
+    def get_endDate(self, obj):
+        return obj.end_date.isoformat() if obj.end_date else None
+
 
 
 class ProposalSerializer(serializers.ModelSerializer):
@@ -107,10 +148,10 @@ class ProposalSerializer(serializers.ModelSerializer):
         model = Proposal
         fields = [
             'proposal_id', 'title', 'description', 'proposer', 'proposer_details',
-            'status', 'round', 'round_details', 'total_donations', 'created_at',
-            'total_funding', 'donation_count', 'match_amount'
+            'status', 'round', 'round_details', 'funding_goal', 'total_donations', 'created_at',
+            'total_funding', 'donation_count', 'match_amount', 'on_chain_id'
         ]
-        read_only_fields = ['proposal_id', 'created_at', 'total_donations']
+        read_only_fields = ['proposal_id', 'created_at', 'total_donations', 'proposer', 'round', 'on_chain_id']
 
     def get_total_funding(self, obj):
         donations_total = obj.donations.aggregate(total=Sum('amount'))['total'] or 0
@@ -133,7 +174,7 @@ class DonationSerializer(serializers.ModelSerializer):
         model = Donation
         fields = [
             'donation_id', 'donor', 'donor_details', 'proposal', 'proposal_title',
-            'round_id', 'amount', 'sybil_score', 'tx_hash', 'created_at'
+            'round_id', 'amount', 'description', 'created_at'
         ]
         read_only_fields = ['donation_id', 'created_at']
 

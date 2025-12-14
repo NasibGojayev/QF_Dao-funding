@@ -1,0 +1,33 @@
+# Data Science Dependencies for DonCoin DAO
+
+# Core Data Processing
+pandas>=2.0.0
+numpy>=1.24.0
+
+# Machine Learning
+scikit-learn>=1.3.0
+scipy>=1.11.0
+
+# Time Series Forecasting
+prophet>=1.1.0
+
+# Dashboard
+dash>=2.14.0
+plotly>=5.18.0
+dash-bootstrap-components>=1.5.0
+
+# Database
+psycopg2-binary>=2.9.0
+sqlalchemy>=2.0.0
+
+# API
+fastapi>=0.104.0
+uvicorn>=0.24.0
+
+# Utilities
+python-dotenv>=1.0.0
+requests>=2.31.0
+
+# Jupyter for notebooks
+jupyter>=1.0.0
+nbformat>=5.9.0

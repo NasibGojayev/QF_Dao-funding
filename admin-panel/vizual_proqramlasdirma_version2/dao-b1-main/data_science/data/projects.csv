@@ -1,0 +1,31 @@
+project_id,owner_id,title,description,created_at,is_active
+1,52,Community Garden,Description for Community Garden,2025-08-13 20:50:25.465371,True
+2,93,Education Platform,Description for Education Platform,2025-08-15 20:50:25.465371,True
+3,15,Clean Water Initiative,Description for Clean Water Initiative,2025-08-17 20:50:25.465371,True
+4,72,Tech Hub,Description for Tech Hub,2025-08-19 20:50:25.465371,False
+5,61,Art Installation,Description for Art Installation,2025-08-21 20:50:25.465371,True
+6,21,Healthcare Access,Description for Healthcare Access,2025-08-23 20:50:25.465371,True
+7,83,Solar Energy,Description for Solar Energy,2025-08-25 20:50:25.465371,True
+8,87,Youth Mentorship,Description for Youth Mentorship,2025-08-27 20:50:25.465371,True
+9,75,Food Bank,Description for Food Bank,2025-08-29 20:50:25.465371,False
+10,75,Housing Support,Description for Housing Support,2025-08-31 20:50:25.465371,True
+11,88,Digital Literacy,Description for Digital Literacy,2025-09-02 20:50:25.465371,False
+12,100,Wildlife Conservation,Description for Wildlife Conservation,2025-09-04 20:50:25.465371,True
+13,24,Ocean Cleanup,Description for Ocean Cleanup,2025-09-06 20:50:25.465371,True
+14,3,Renewable Energy,Description for Renewable Energy,2025-09-08 20:50:25.465371,True
+15,22,Mental Health,Description for Mental Health,2025-09-10 20:50:25.465371,False
+16,53,Senior Care,Description for Senior Care,2025-09-12 20:50:25.465371,True
+17,2,Child Education,Description for Child Education,2025-09-14 20:50:25.465371,True
+18,88,Climate Action,Description for Climate Action,2025-09-16 20:50:25.465371,True
+19,30,Refugee Support,Description for Refugee Support,2025-09-18 20:50:25.465371,True
+20,38,Disability Services,Description for Disability Services,2025-09-20 20:50:25.465371,True
+21,2,Homeless Shelter,Description for Homeless Shelter,2025-09-22 20:50:25.465371,True
+22,64,Veteran Support,Description for Veteran Support,2025-09-24 20:50:25.465371,True
+23,60,STEM Education,Description for STEM Education,2025-09-26 20:50:25.465371,True
+24,21,Women Empowerment,Description for Women Empowerment,2025-09-28 20:50:25.465371,True
+25,33,Rural Development,Description for Rural Development,2025-09-30 20:50:25.465371,True
+26,76,Urban Farming,Description for Urban Farming,2025-10-02 20:50:25.465371,True
+27,58,Recycling Program,Description for Recycling Program,2025-10-04 20:50:25.465371,True
+28,22,Public Library,Description for Public Library,2025-10-06 20:50:25.465371,True
+29,89,Sports Center,Description for Sports Center,2025-10-08 20:50:25.465371,True
+30,49,Music Academy,Description for Music Academy,2025-10-10 20:50:25.465371,True

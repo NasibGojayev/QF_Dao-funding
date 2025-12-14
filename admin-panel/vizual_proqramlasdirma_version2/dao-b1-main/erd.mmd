@@ -1,0 +1,45 @@
+%% Mermaid ERD for SDF1-like schema
+erDiagram
+    USERS ||--o{ TRANSACTIONS : places
+    USERS ||--o{ PROJECTS : creates
+    PROJECTS ||--o{ TRANSACTIONS : receives
+    PROJECTS ||--o{ MILESTONES : has
+    PROJECTS ||--o{ PROJECT_TAGS : has
+    TAGS ||--o{ PROJECT_TAGS : tagged_by
+
+    USERS {
+        int id PK
+        string wallet
+        string email
+        datetime created_at
+    }
+    PROJECTS {
+        int id PK
+        int owner_id FK
+        string title
+        text description
+    }
+    TRANSACTIONS {
+        int id PK
+        string tx_hash
+        int user_id FK
+        int project_id FK
+        decimal amount
+        datetime created_at
+        bool success
+    }
+    TAGS {
+        int id PK
+        string name
+    }
+    PROJECT_TAGS {
+        int id PK
+        int project_id FK
+        int tag_id FK
+    }
+    MILESTONES {
+        int id PK
+        int project_id FK
+        string title
+        bool resolved
+    }

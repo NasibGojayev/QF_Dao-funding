@@ -1,0 +1,80 @@
+{
+  "anomaly_detector": [
+    {
+      "model_name": "anomaly_detector",
+      "version": "1.0.0",
+      "created_at": "2025-12-09T21:00:45.180892",
+      "model_hash": "4a1cc3ee",
+      "metrics": {
+        "anomaly_ratio": 0.05
+      },
+      "hyperparameters": {
+        "n_estimators": 50,
+        "max_features": 0.5,
+        "contamination": 0.05
+      },
+      "training_data_hash": "",
+      "description": "Isolation Forest for fraud detection"
+    },
+    {
+      "model_name": "anomaly_detector",
+      "version": "1.0.1",
+      "created_at": "2025-12-09T21:02:16.695552",
+      "model_hash": "4a1cc3ee",
+      "metrics": {
+        "anomaly_ratio": 0.05
+      },
+      "hyperparameters": {
+        "n_estimators": 50,
+        "max_features": 0.5,
+        "contamination": 0.05
+      },
+      "training_data_hash": "",
+      "description": "Isolation Forest for fraud detection"
+    }
+  ],
+  "fraud_classifier": [
+    {
+      "model_name": "fraud_classifier",
+      "version": "1.0.0",
+      "created_at": "2025-12-09T21:00:51.696882",
+      "model_hash": "975f8351",
+      "metrics": {
+        "accuracy": 0.991,
+        "precision": 0.991,
+        "recall": 1.0,
+        "f1": 0.9954796584630838,
+        "auc_roc": 0.9945061105505101
+      },
+      "hyperparameters": {
+        "C": 0.01,
+        "max_iter": 1000,
+        "penalty": "l2",
+        "solver": "liblinear"
+      },
+      "training_data_hash": "",
+      "description": "Logistic regression for fraud classification"
+    },
+    {
+      "model_name": "fraud_classifier",
+      "version": "1.0.1",
+      "created_at": "2025-12-09T21:02:22.070344",
+      "model_hash": "975f8351",
+      "metrics": {
+        "accuracy": 0.991,
+        "precision": 0.991,
+        "recall": 1.0,
+        "f1": 0.9954796584630838,
+        "auc_roc": 0.9945061105505101
+      },
+      "hyperparameters": {
+        "C": 0.01,
+        "max_iter": 1000,
+        "penalty": "l2",
+        "solver": "liblinear"
+      },
+      "training_data_hash": "",
+      "description": "Logistic regression for fraud classification"
+    }
+  ]
+}

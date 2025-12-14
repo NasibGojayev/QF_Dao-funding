@@ -1,0 +1,26 @@
+# Security module configuration
+from .settings import (
+    DATABASE_CONFIG,
+    DATABASE_URL,
+    REDIS_URL,
+    AUTH_CONFIG,
+    RATE_LIMIT_CONFIG,
+    MONITORING_KPIS,
+    ALERT_CONFIG,
+    DATA_RETENTION_CONFIG,
+    SIEM_CONFIG,
+    DASHBOARD_CONFIG,
+)
+
+__all__ = [
+    'DATABASE_CONFIG',
+    'DATABASE_URL', 
+    'REDIS_URL',
+    'AUTH_CONFIG',
+    'RATE_LIMIT_CONFIG',
+    'MONITORING_KPIS',
+    'ALERT_CONFIG',
+    'DATA_RETENTION_CONFIG',
+    'SIEM_CONFIG',
+    'DASHBOARD_CONFIG',
+]

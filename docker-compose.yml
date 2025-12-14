@@ -1,0 +1,122 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=doncoin
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  hardhat:
+    build:
+      context: ./smart-contracts
+    ports:
+      - "8545:8545"
+    networks:
+      - doncoin-network
+
+  deployer:
+    # This service runs once to deploy contracts to the running hardhat node
+    build:
+      context: ./smart-contracts
+    command: npx hardhat run scripts/deploy.js --network docker
+    environment:
+      - HARDHAT_NETWORK_URL=http://hardhat:8545
+    volumes:
+      # Mount host directory to write artifacts back to host
+      - ./smart-contracts:/app
+      # Mount frontend lib to update contracts.ts
+      # Map to where deploy.js expects it: /app/../my-app/lib => /my-app/lib
+      - ./my-app/lib:/my-app/lib
+    depends_on:
+      hardhat:
+        condition: service_started
+    networks:
+      - doncoin-network
+
+  backend:
+    build:
+      context: ./backend/doncoin
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      # Sync source code for development
+      - ./backend/doncoin:/app
+      # Mount smart-contracts artifacts so indexer can find them (via parent dir)
+      - ./smart-contracts/artifacts-store:/app/../../smart-contracts/artifacts-store
+    ports:
+      - "8000:8000"
+    environment:
+      - DB_NAME=doncoin
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DJANGO_ALLOWED_HOSTS=*
+      - HARDHAT_RPC_URL=http://hardhat:8545
+    depends_on:
+      db:
+        condition: service_healthy
+      deployer:
+        condition: service_completed_successfully
+    networks:
+      - doncoin-network
+
+  indexer:
+    build:
+      context: ./backend/doncoin
+    command: python manage.py run_indexer
+    volumes:
+      - ./backend/doncoin:/app
+      # Mount artifacts for indexer
+      - ./smart-contracts/artifacts-store:/app/../../smart-contracts/artifacts-store
+    environment:
+      - DB_NAME=doncoin
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_HOST=db
+      - DB_PORT=5432
+      - HARDHAT_RPC_URL=http://hardhat:8545
+    depends_on:
+      db:
+        condition: service_healthy
+      deployer:
+        condition: service_completed_successfully
+    networks:
+      - doncoin-network
+
+  frontend:
+    build:
+      context: ./my-app
+    volumes:
+      # Sync source code for development (Hot Reloading)
+      - ./my-app:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    environment:
+      # These are for the browser, so they point to localhost (host machine)
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+      - NEXT_PUBLIC_HARDHAT_RPC=http://localhost:8545
+    depends_on:
+      deployer:
+        condition: service_completed_successfully
+    networks:
+      - doncoin-network
+
+volumes:
+  postgres_data:
+
+
+networks:
+  doncoin-network:
+    driver: bridge
