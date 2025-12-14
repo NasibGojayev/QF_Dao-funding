@@ -182,7 +182,7 @@ QF_Dao-funding/
 │   ├── components/        # React components
 │   └── lib/               # Utilities & config
 │
-├── admin-panel-ui/        # Admin dashboard (optional)
+├── admin/                 # Admin dashboard
 ├── data-science/          # Analytics & ML models
 ├── security/              # Security monitoring tools
 │
