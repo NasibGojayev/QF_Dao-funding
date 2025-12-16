@@ -2,174 +2,82 @@ import Link from "next/link";
 
 type Round = {
     id: string;
+    round_id?: string;
     name: string;
-    description: string;
-    startDate: string;
-    endDate: string;
-    status: "upcoming" | "active" | "completed";
-    matchingPoolAmount: number;
-    totalDonations: number;
-    proposalCount: number;
-    donorCount: number;
+    description?: string;
+    startDate?: string;
+    start_date?: string;
+    endDate?: string;
+    end_date?: string;
+    status: string;
+    matching_pool_details?: {
+        total_funds: number;
+        allocated_funds: number;
+    };
+    matchingPoolAmount?: number;
+    totalDonations?: number;
+    total_donations?: number;
+    proposalCount?: number;
+    total_proposals?: number;
+    donorCount?: number;
 };
 
 type Proposal = {
-    id: string;
+    proposal_id?: string;
+    id?: string;
     title: string;
-    creator: string;
+    proposer_details?: {
+        address?: string;
+        username?: string;
+    };
+    creator?: string;
     description: string;
-    category: string;
-    directRaised: number;
+    category?: string;
+    directRaised?: number;
+    total_donations?: number;
     matchAmount?: number;
-    uniqueDonors: number;
+    match_amount?: number;
+    uniqueDonors?: number;
+    donation_count?: number;
 };
 
-// Mock round database
-const roundDatabase: { [key: string]: Round } = {
-    "round-1": {
-        id: "round-1",
-        name: "Climate & Clean Tech Round #1",
-        description: "Supporting innovative projects tackling climate change and developing clean technologies for a sustainable future.",
-        startDate: "2025-09-01",
-        endDate: "2025-10-01",
-        status: "completed",
-        matchingPoolAmount: 100000,
-        totalDonations: 45000,
-        proposalCount: 5,
-        donorCount: 1234,
-    },
-    "round-2": {
-        id: "round-2",
-        name: "Education & Accessibility Q4 2025",
-        description: "Funding initiatives that improve educational access and make technology more accessible to underserved communities.",
-        startDate: "2025-10-15",
-        endDate: "2025-11-15",
-        status: "active",
-        matchingPoolAmount: 150000,
-        totalDonations: 62000,
-        proposalCount: 8,
-        donorCount: 2156,
-    },
-    "round-3": {
-        id: "round-3",
-        name: "Healthcare Innovation Round #2",
-        description: "Accelerating healthcare solutions including telemedicine, medical research, and public health infrastructure.",
-        startDate: "2025-12-01",
-        endDate: "2026-01-01",
-        status: "upcoming",
-        matchingPoolAmount: 200000,
-        totalDonations: 0,
-        proposalCount: 0,
-        donorCount: 0,
-    },
-};
+async function fetchRound(roundId: string): Promise<Round | null> {
+    // Extract the UUID from "round-{uuid}" format
+    const uuid = roundId.startsWith("round-") ? roundId.replace("round-", "") : roundId;
 
-const proposalsByRound: { [key: string]: Proposal[] } = {
-    "round-1": [
-        {
-            id: "p1",
-            title: "Clean Water Initiative",
-            creator: "0xabc123...def789",
-            description: "Installing water filtration systems in rural areas to provide clean drinking water.",
-            category: "Environment",
-            directRaised: 15000,
-            matchAmount: 28500,
-            uniqueDonors: 289,
-        },
-        {
-            id: "p2",
-            title: "Open Education Platform",
-            creator: "0xdef456...ghi012",
-            description: "Building a free, decentralized learning platform with STEM courses.",
-            category: "Education",
-            directRaised: 12000,
-            matchAmount: 22300,
-            uniqueDonors: 234,
-        },
-        {
-            id: "p3",
-            title: "Forest Restoration",
-            creator: "0xghi789...jkl345",
-            description: "Reforestation initiative to plant 100,000 native trees.",
-            category: "Environment",
-            directRaised: 8500,
-            matchAmount: 15200,
-            uniqueDonors: 178,
-        },
-        {
-            id: "p4",
-            title: "Rural Healthcare Access",
-            creator: "0xjkl012...mno678",
-            description: "Establishing mobile health clinics in underserved regions.",
-            category: "Healthcare",
-            directRaised: 5000,
-            matchAmount: 8800,
-            uniqueDonors: 95,
-        },
-        {
-            id: "p5",
-            title: "Renewable Energy Grid",
-            creator: "0xmno345...pqr901",
-            description: "Building community-owned solar and wind energy infrastructure.",
-            category: "Energy",
-            directRaised: 4500,
-            matchAmount: 3700,
-            uniqueDonors: 42,
-        },
-    ],
-    "round-2": [
-        {
-            id: "p6",
-            title: "AI Literacy Program",
-            creator: "0xpqr678...stu234",
-            description: "Teaching AI fundamentals to underprivileged youth.",
-            category: "Education",
-            directRaised: 18000,
-            matchAmount: 32500,
-            uniqueDonors: 312,
-        },
-        {
-            id: "p7",
-            title: "Accessible Web Framework",
-            creator: "0xstu901...uvw567",
-            description: "Open-source framework for building accessible web applications.",
-            category: "Accessibility",
-            directRaised: 14000,
-            matchAmount: 25600,
-            uniqueDonors: 287,
-        },
-        {
-            id: "p8",
-            title: "Sign Language Video Library",
-            creator: "0xuvw234...xyz890",
-            description: "Building the largest free sign language video resource library.",
-            category: "Accessibility",
-            directRaised: 10000,
-            matchAmount: 18200,
-            uniqueDonors: 156,
-        },
-    ],
-};
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
-async function fetchRound(roundId: string) {
     try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE || ""}/api/rounds/${roundId}`, {
+        const res = await fetch(`${apiUrl}/rounds/${uuid}/`, {
             cache: "no-store",
         });
-        if (res.ok) return await res.json();
-    } catch (e) { }
-    return roundDatabase[roundId];
+        if (res.ok) {
+            return await res.json();
+        }
+    } catch (e) {
+        console.error("Failed to fetch round:", e);
+    }
+    return null;
 }
 
-async function fetchProposals(roundId: string) {
+async function fetchProposals(roundId: string): Promise<Proposal[]> {
+    // Extract the UUID from "round-{uuid}" format
+    const uuid = roundId.startsWith("round-") ? roundId.replace("round-", "") : roundId;
+
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+
     try {
-        const res = await fetch(
-            `${process.env.NEXT_PUBLIC_API_BASE || ""}/api/proposals?roundId=${roundId}`,
-            { cache: "no-store" }
-        );
-        if (res.ok) return await res.json();
-    } catch (e) { }
-    return proposalsByRound[roundId] || [];
+        // Use the round's proposals endpoint
+        const res = await fetch(`${apiUrl}/rounds/${uuid}/proposals/`, {
+            cache: "no-store",
+        });
+        if (res.ok) {
+            return await res.json();
+        }
+    } catch (e) {
+        console.error("Failed to fetch proposals:", e);
+    }
+    return [];
 }
 
 export default async function RoundDetailPage({
