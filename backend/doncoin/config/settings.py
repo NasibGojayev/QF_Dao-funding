@@ -81,7 +81,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'middleware.log_middleware.LogEverythingMiddleware'
+    'middleware.log_middleware.LogEverythingMiddleware',
+    'api.security_middleware.SecurityLoggingMiddleware',
+    'api.security_middleware.SecurityEventMiddleware',
 ]
 REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': [
