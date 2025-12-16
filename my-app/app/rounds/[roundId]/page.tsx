@@ -80,6 +80,50 @@ async function fetchProposals(roundId: string): Promise<Proposal[]> {
     return [];
 }
 
+// Helper functions to normalize data from backend
+function getStartDate(round: Round): string {
+    return round.start_date || round.startDate || "";
+}
+
+function getEndDate(round: Round): string {
+    return round.end_date || round.endDate || "";
+}
+
+function getMatchingPoolAmount(round: Round): number {
+    return round.matching_pool_details?.total_funds || round.matchingPoolAmount || 0;
+}
+
+function getTotalDonations(round: Round): number {
+    return round.total_donations || round.totalDonations || 0;
+}
+
+function getProposalCount(round: Round): number {
+    return round.total_proposals || round.proposalCount || 0;
+}
+
+function getProposerId(proposal: Proposal): string {
+    return proposal.proposal_id || proposal.id || "";
+}
+
+function getProposerDisplay(proposal: Proposal): string {
+    if (proposal.proposer_details) {
+        return proposal.proposer_details.username || proposal.proposer_details.address || "Unknown";
+    }
+    return proposal.creator || "Unknown";
+}
+
+function getDirectRaised(proposal: Proposal): number {
+    return proposal.total_donations || proposal.directRaised || 0;
+}
+
+function getMatchAmount(proposal: Proposal): number {
+    return proposal.match_amount || proposal.matchAmount || 0;
+}
+
+function getDonorCount(proposal: Proposal): number {
+    return proposal.donation_count || proposal.uniqueDonors || 0;
+}
+
 export default async function RoundDetailPage({
     params,
 }: {
@@ -105,10 +149,16 @@ export default async function RoundDetailPage({
     }
 
     const isActive = round.status === "active";
-    const isCompleted = round.status === "completed";
+    const isCompleted = round.status === "completed" || round.status === "closed";
     const sortedProposals = [...proposals].sort(
-        (a: Proposal, b: Proposal) => (b.matchAmount || 0) - (a.matchAmount || 0)
+        (a: Proposal, b: Proposal) => getMatchAmount(b) - getMatchAmount(a)
     );
+
+    const startDateStr = getStartDate(round);
+    const endDateStr = getEndDate(round);
+    const matchingPoolAmount = getMatchingPoolAmount(round);
+    const totalDonations = getTotalDonations(round);
+    const proposalCount = getProposalCount(round);
 
     return (
         <main className="min-h-screen bg-background text-foreground pt-20">
@@ -118,7 +168,7 @@ export default async function RoundDetailPage({
                     <div className="flex items-start justify-between mb-6">
                         <div>
                             <h1 className="text-4xl font-bold mb-2 text-foreground">{round.name}</h1>
-                            <p className="text-muted-foreground max-w-2xl">{round.description}</p>
+                            <p className="text-muted-foreground max-w-2xl">{round.description || "A funding round for community projects."}</p>
                         </div>
                         <div>
                             <div className={`inline-block px-4 py-2 rounded-full text-sm font-semibold ${isActive
@@ -132,7 +182,7 @@ export default async function RoundDetailPage({
                         </div>
                     </div>
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <span>📅 {new Date(round.startDate).toLocaleDateString()} → {new Date(round.endDate).toLocaleDateString()}</span>
+                        <span>📅 {startDateStr ? new Date(startDateStr).toLocaleDateString() : "TBD"} → {endDateStr ? new Date(endDateStr).toLocaleDateString() : "TBD"}</span>
                     </div>
                 </div>
             </section>
@@ -143,26 +193,26 @@ export default async function RoundDetailPage({
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     <div className="bg-card border border-border rounded-lg p-6 shadow-sm">
                         <div className="text-sm text-muted-foreground mb-2">Matching Pool</div>
-                        <div className="text-3xl font-bold text-foreground">${round.matchingPoolAmount.toLocaleString()}</div>
+                        <div className="text-3xl font-bold text-foreground">${matchingPoolAmount.toLocaleString()}</div>
                         <div className="text-xs text-primary mt-2">Available for QF distribution</div>
                     </div>
 
                     <div className="bg-card border border-border rounded-lg p-6 shadow-sm">
                         <div className="text-sm text-muted-foreground mb-2">Community Donations</div>
-                        <div className="text-3xl font-bold text-foreground">${round.totalDonations.toLocaleString()}</div>
+                        <div className="text-3xl font-bold text-foreground">${totalDonations.toLocaleString()}</div>
                         <div className="text-xs text-primary mt-2">Direct contributions</div>
                     </div>
 
                     <div className="bg-card border border-border rounded-lg p-6 shadow-sm">
                         <div className="text-sm text-muted-foreground mb-2">Total Proposals</div>
-                        <div className="text-3xl font-bold text-foreground">{round.proposalCount}</div>
+                        <div className="text-3xl font-bold text-foreground">{proposalCount}</div>
                         <div className="text-xs text-primary mt-2">Requesting funding</div>
                     </div>
 
                     <div className="bg-card border border-border rounded-lg p-6 shadow-sm">
-                        <div className="text-sm text-muted-foreground mb-2">Community Size</div>
-                        <div className="text-3xl font-bold text-foreground">{round.donorCount.toLocaleString()}</div>
-                        <div className="text-xs text-primary mt-2">Unique donors</div>
+                        <div className="text-sm text-muted-foreground mb-2">Proposals Listed</div>
+                        <div className="text-3xl font-bold text-foreground">{proposals.length}</div>
+                        <div className="text-xs text-primary mt-2">In this round</div>
                     </div>
                 </div>
             </section>
@@ -176,9 +226,9 @@ export default async function RoundDetailPage({
                                 <h3 className="text-xl font-bold mb-2 text-foreground">Round is Currently Active</h3>
                                 <p className="text-muted-foreground">Browse and support projects that are actively seeking funding right now.</p>
                             </div>
-                            <Link href={`/proposals?roundId=${roundId}`}
+                            <Link href={`/proposals`}
                                 className="px-6 py-3 bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg font-semibold transition shadow-sm">
-                                View Proposals
+                                View All Proposals
                             </Link>
                         </div>
                     </div>
@@ -199,49 +249,59 @@ export default async function RoundDetailPage({
 
                 {proposals && proposals.length > 0 ? (
                     <div className="grid gap-6">
-                        {sortedProposals.map((proposal: Proposal, idx: number) => (
-                            <div key={proposal.id} className="bg-card border border-border rounded-lg p-6 hover:shadow-md transition">
-                                <div className="flex items-start justify-between mb-4">
-                                    <div>
-                                        <div className="flex items-center gap-2 mb-2">
-                                            <span className="text-sm font-semibold text-muted-foreground">#{idx + 1}</span>
-                                            <span className="bg-secondary text-secondary-foreground px-2 py-1 rounded text-xs">{proposal.category}</span>
+                        {sortedProposals.map((proposal: Proposal, idx: number) => {
+                            const proposalId = getProposerId(proposal);
+                            const proposerDisplay = getProposerDisplay(proposal);
+                            const directRaised = getDirectRaised(proposal);
+                            const matchAmount = getMatchAmount(proposal);
+                            const donorCount = getDonorCount(proposal);
+
+                            return (
+                                <div key={proposalId} className="bg-card border border-border rounded-lg p-6 hover:shadow-md transition">
+                                    <div className="flex items-start justify-between mb-4">
+                                        <div>
+                                            <div className="flex items-center gap-2 mb-2">
+                                                <span className="text-sm font-semibold text-muted-foreground">#{idx + 1}</span>
+                                                {proposal.category && (
+                                                    <span className="bg-secondary text-secondary-foreground px-2 py-1 rounded text-xs">{proposal.category}</span>
+                                                )}
+                                            </div>
+                                            <h3 className="text-xl font-bold mb-1 text-foreground">{proposal.title}</h3>
+                                            <p className="text-sm text-muted-foreground">By {proposerDisplay}</p>
                                         </div>
-                                        <h3 className="text-xl font-bold mb-1 text-foreground">{proposal.title}</h3>
-                                        <p className="text-sm text-muted-foreground">By {proposal.creator}</p>
+                                        <Link href={`/proposals/${proposalId}`}
+                                            className="px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90 rounded text-sm font-semibold transition">
+                                            View
+                                        </Link>
                                     </div>
-                                    <Link href={`/proposals/${proposal.id}`}
-                                        className="px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90 rounded text-sm font-semibold transition">
-                                        View
-                                    </Link>
-                                </div>
 
-                                <p className="text-muted-foreground mb-4">{proposal.description}</p>
+                                    <p className="text-muted-foreground mb-4">{proposal.description}</p>
 
-                                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                                    <div className="bg-secondary/20 rounded p-3 border border-border/50">
-                                        <div className="text-xs text-muted-foreground mb-1">Direct Raised</div>
-                                        <div className="text-lg font-bold text-green-600 dark:text-green-400">${proposal.directRaised.toLocaleString()}</div>
-                                    </div>
-                                    {proposal.matchAmount !== undefined && (
+                                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                                         <div className="bg-secondary/20 rounded p-3 border border-border/50">
-                                            <div className="text-xs text-muted-foreground mb-1">Match Amount</div>
-                                            <div className="text-lg font-bold text-purple-600 dark:text-purple-400">${proposal.matchAmount.toLocaleString()}</div>
+                                            <div className="text-xs text-muted-foreground mb-1">Direct Raised</div>
+                                            <div className="text-lg font-bold text-green-600 dark:text-green-400">${directRaised.toLocaleString()}</div>
                                         </div>
-                                    )}
-                                    <div className="bg-secondary/20 rounded p-3 border border-border/50">
-                                        <div className="text-xs text-muted-foreground mb-1">Total Funded</div>
-                                        <div className="text-lg font-bold text-emerald-600 dark:text-emerald-400">
-                                            ${(proposal.directRaised + (proposal.matchAmount || 0)).toLocaleString()}
+                                        {matchAmount > 0 && (
+                                            <div className="bg-secondary/20 rounded p-3 border border-border/50">
+                                                <div className="text-xs text-muted-foreground mb-1">Match Amount</div>
+                                                <div className="text-lg font-bold text-purple-600 dark:text-purple-400">${matchAmount.toLocaleString()}</div>
+                                            </div>
+                                        )}
+                                        <div className="bg-secondary/20 rounded p-3 border border-border/50">
+                                            <div className="text-xs text-muted-foreground mb-1">Total Funded</div>
+                                            <div className="text-lg font-bold text-emerald-600 dark:text-emerald-400">
+                                                ${(directRaised + matchAmount).toLocaleString()}
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div className="bg-secondary/20 rounded p-3 border border-border/50">
-                                        <div className="text-xs text-muted-foreground mb-1">Unique Donors</div>
-                                        <div className="text-lg font-bold text-orange-600 dark:text-orange-400">{proposal.uniqueDonors}</div>
+                                        <div className="bg-secondary/20 rounded p-3 border border-border/50">
+                                            <div className="text-xs text-muted-foreground mb-1">Donations</div>
+                                            <div className="text-lg font-bold text-orange-600 dark:text-orange-400">{donorCount}</div>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 ) : (
                     <div className="bg-card border-dashed border border-border rounded-lg p-12 text-center">
