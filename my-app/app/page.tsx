@@ -1,72 +1,53 @@
-"use client";
-
 import Link from "next/link";
-import { useState, useEffect } from "react";
-import dynamic from "next/dynamic";
-
-// Dynamically import ThreeBackground to avoid SSR issues with canvas
-const ThreeBackground = dynamic(() => import("../components/ThreeBackground"), {
-  ssr: false,
-  loading: () => <div className="w-full h-[250px] md:h-[300px] flex items-center justify-center" />
-});
+import RoundTimer from "../components/RoundTimer";
+import ThreeBackground from "../components/ThreeBackground";
 
 type Round = { id: string; name: string; pool: number; endDate: string };
 type Proposal = { id: string; title: string; snippet?: string };
 
-function timeRemaining(endDate: string) {
-  const diff = new Date(endDate).getTime() - Date.now();
-  if (diff <= 0) return "Ended";
-  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-  const hrs = Math.floor((diff / (1000 * 60 * 60)) % 24);
-  return `${days}d ${hrs}h`;
+async function getActiveRound(): Promise<Round | null> {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/rounds/active/`, {
+      next: { revalidate: 60 } // Revalidate every 60 seconds
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (data.length > 0) {
+        return data[0];
+      }
+    }
+  } catch (e) {
+    console.error("Failed to fetch active round:", e);
+  }
+  return null;
 }
 
-export default function Home() {
-  const [activeRound, setActiveRound] = useState<Round | null>(null);
-  const [featured, setFeatured] = useState<Proposal[]>([]);
-
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-    // Fetch active round
-    fetchActiveRound();
-    // Fetch featured proposals
-    fetchFeaturedProposals();
-  }, []);
-
-  const fetchActiveRound = async () => {
-    try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/rounds/active/`);
-      if (res.ok) {
-        const data = await res.json();
-        if (data.length > 0) {
-          setActiveRound(data[0]);
-        }
-      }
-    } catch (e) {
-      console.error("Failed to fetch active round:", e);
+async function getFeaturedProposals(): Promise<Proposal[]> {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/proposals/`, {
+      next: { revalidate: 60 }
+    });
+    if (res.ok) {
+      const data = await res.json();
+      const proposals = data.results || data || [];
+      // Map backend data to frontend type
+      return proposals.slice(0, 3).map((p: any) => ({
+        id: p.proposal_id,
+        title: p.title,
+        snippet: p.description ? (p.description.length > 100 ? p.description.substring(0, 100) + "..." : p.description) : "No description provided."
+      }));
     }
-  };
+  } catch (e) {
+    console.error("Failed to fetch proposals:", e);
+  }
+  return [];
+}
 
-  const fetchFeaturedProposals = async () => {
-    try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/proposals/`);
-      if (res.ok) {
-        const data = await res.json();
-        const proposals = data.results || data || [];
-        // Map backend data to frontend type
-        const mappedProposals = proposals.slice(0, 3).map((p: any) => ({
-          id: p.proposal_id,
-          title: p.title,
-          snippet: p.description ? (p.description.length > 100 ? p.description.substring(0, 100) + "..." : p.description) : "No description provided."
-        }));
-        setFeatured(mappedProposals);
-      }
-    } catch (e) {
-      console.error("Failed to fetch proposals:", e);
-    }
-  };
+export default async function Home() {
+  const activeRoundData = getActiveRound();
+  const featuredData = getFeaturedProposals();
+
+  const [activeRound, featured] = await Promise.all([activeRoundData, featuredData]);
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-start p-12 space-y-8 relative overflow-hidden bg-background">
@@ -97,7 +78,7 @@ export default function Home() {
               <h3 className="text-xl font-bold text-foreground">Current Pool</h3>
               <p className="text-4xl font-extrabold text-green-600 dark:text-green-400 mt-2 text-shadow-sm">${activeRound.pool.toLocaleString()}</p>
               <p className="text-sm text-center text-muted-foreground mt-1">
-                Ends in {isMounted && activeRound.endDate ? timeRemaining(activeRound.endDate) : "..."}
+                Ends in <RoundTimer endDate={activeRound.endDate} />
               </p>
             </div>
           )}
@@ -105,7 +86,7 @@ export default function Home() {
 
         {/* Right Column: Interactive 3D Coin */}
         <div className="flex justify-center items-center h-full min-h-[400px]">
-          <ThreeBackground key="three-bg-stable" />
+          <ThreeBackground />
         </div>
       </section>
 
